@@ -26,6 +26,7 @@ The website for Narragate Entertainment LLC, an independent film company in West
 | `assets/js/` | `site.js`: the menu, the song player and the forms |
 | `assets/fonts/` | EB Garamond and Outfit as variable `.woff2` files, with their licenses |
 | `assets/img/` | The colored Narragate logos and the film-grain texture |
+| `assets/audio/` | The fourteen songs, named `<film>-<nn>-<slug>.mp3` |
 | `assets/favicon/` | The favicon set from the brand bundle |
 | `worker/` | The Cloudflare Worker behind the two forms. Not part of the published site. |
 
@@ -51,7 +52,7 @@ There is deliberately no `CNAME` file yet. Adding the custom domain under **Sett
 
 - **The forms need the Worker deployed.** `site.js` posts to `api.narragate.com`, a Cloudflare Worker that records each submission in KV and emails the notification. The code is in `worker/`; see `worker/README.md` for the deploy steps. **Until it is deployed the forms show their failure state** — which is correct behaviour, but it does mean they cannot be used yet.
 - **Turnstile is live** with the real widget for `narragate.com`, `www.narragate.com` and `narragate.github.io`. If the site ever moves to another hostname, add it to the widget or the forms will reject every submission.
-- **The songs are silent.** The player shows its playing state, but no audio files have been supplied.
+- **The songs play.** All fourteen are in `assets/audio/` as MP3 and wired to the player, which runs on through a film's tracks in order.
 - **The teaser and short films open YouTube** in a new tab.
 - **The investor legal notice is a draft that counsel has not reviewed.** It is live on `investors.html` and is marked with an HTML comment in the source. It was written to be conventional and accurate for a pre-offering page, but securities wording is a lawyer's call. Replace it before relying on it.
 - **The privacy notice describes the system as built** — what the two forms collect, the IP, country and user-agent recorded with a submission, Cloudflare and Resend as processors, and a two-year retention period. If the forms or the Worker change, `privacy.html` has to change with them.

@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  var TRACKS = [{"id": "d1", "n": "1", "title": "Gritty Life", "note": "Ethan in a bar, early on: whiskey, wit and nowhere to go.", "film": "Duet"}, {"id": "d2", "n": "2", "title": "Words", "note": "Annie at choir rehearsal. Ethan hears her and knows.", "film": "Duet"}, {"id": "d3", "n": "3", "title": "We Had a Good Run", "note": "Annie records alone, for Ethan to carry to Nashville.", "film": "Duet"}, {"id": "d4", "n": "4", "title": "Needing Nothing More", "note": "Their first duet, at a café, just before the accident.", "film": "Duet"}, {"id": "d5", "n": "5", "title": "Beverly", "note": "An old, unreleased love song that surfaces in rehab.", "film": "Duet"}, {"id": "d6", "n": "6", "title": "A Love So Fine", "note": "The second duet: love lasts when both can bend.", "film": "Duet"}, {"id": "d7", "n": "7", "title": "With a Little Hope", "note": "Annie, on her own, after Ethan pulls away.", "film": "Duet"}, {"id": "d8", "n": "8", "title": "Reputations", "note": "Ethan’s pride, and what his name has cost him.", "film": "Duet"}, {"id": "d9", "n": "9", "title": "Lookin’ Back is My Disease", "note": "Ethan counts what he wasted and who he hurt.", "film": "Duet"}, {"id": "d10", "n": "10", "title": "Voice of an Angel", "note": "The final scene. Ethan tells Annie the truth.", "film": "Duet"}, {"id": "a1", "n": "1", "title": "Head in the Clouds", "note": "", "film": "Aileen"}, {"id": "a2", "n": "2", "title": "Where Mermaids Sing", "note": "", "film": "Aileen"}, {"id": "a3", "n": "3", "title": "Marked by Love and Shadow", "note": "", "film": "Aileen"}, {"id": "a4", "n": "4", "title": "Loveless Fool", "note": "", "film": "Aileen"}];
+  var TRACKS = [{"id": "d1", "n": "1", "title": "Gritty Life", "note": "Ethan in a bar, early on: whiskey, wit and nowhere to go.", "film": "Duet", "src": "assets/audio/duet-01-gritty-life.mp3"}, {"id": "d2", "n": "2", "title": "Words", "note": "Annie at choir rehearsal. Ethan hears her and knows.", "film": "Duet", "src": "assets/audio/duet-02-words.mp3"}, {"id": "d3", "n": "3", "title": "We Had a Good Run", "note": "Annie records alone, for Ethan to carry to Nashville.", "film": "Duet", "src": "assets/audio/duet-03-we-had-a-good-run.mp3"}, {"id": "d4", "n": "4", "title": "Needing Nothing More", "note": "Their first duet, at a café, just before the accident.", "film": "Duet", "src": "assets/audio/duet-04-needing-nothing-more.mp3"}, {"id": "d5", "n": "5", "title": "Beverly", "note": "An old, unreleased love song that surfaces in rehab.", "film": "Duet", "src": "assets/audio/duet-05-beverly.mp3"}, {"id": "d6", "n": "6", "title": "A Love So Fine", "note": "The second duet: love lasts when both can bend.", "film": "Duet", "src": "assets/audio/duet-06-a-love-so-fine.mp3"}, {"id": "d7", "n": "7", "title": "With a Little Hope", "note": "Annie, on her own, after Ethan pulls away.", "film": "Duet", "src": "assets/audio/duet-07-with-a-little-hope.mp3"}, {"id": "d8", "n": "8", "title": "Reputations", "note": "Ethan’s pride, and what his name has cost him.", "film": "Duet", "src": "assets/audio/duet-08-reputations.mp3"}, {"id": "d9", "n": "9", "title": "Lookin’ Back is My Disease", "note": "Ethan counts what he wasted and who he hurt.", "film": "Duet", "src": "assets/audio/duet-09-lookin-back-is-my-disease.mp3"}, {"id": "d10", "n": "10", "title": "Voice of an Angel", "note": "The final scene. Ethan tells Annie the truth.", "film": "Duet", "src": "assets/audio/duet-10-voice-of-an-angel.mp3"}, {"id": "a1", "n": "1", "title": "Head in the Clouds", "note": "", "film": "Aileen", "src": "assets/audio/aileen-01-head-in-the-clouds.mp3"}, {"id": "a2", "n": "2", "title": "Where Mermaids Sing", "note": "", "film": "Aileen", "src": "assets/audio/aileen-02-where-mermaids-sing.mp3"}, {"id": "a3", "n": "3", "title": "Marked by Love and Shadow", "note": "", "film": "Aileen", "src": "assets/audio/aileen-03-marked-by-love-and-shadow.mp3"}, {"id": "a4", "n": "4", "title": "Loveless Fool", "note": "", "film": "Aileen", "src": "assets/audio/aileen-04-loveless-fool.mp3"}];
   var EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
   // Where the forms post. The Worker also serves the investor form; the two
@@ -107,26 +107,90 @@
   }
 
   // ---------------------------------------------------------------- player
+  // One audio element for the whole site. The restored session only seeks
+  // once, on the first play, because browsers block autoplay on load.
+  var audio = new window.Audio();
+  audio.preload = 'none';
+  var seekTo = state.t > 0 ? state.t : 0;
+
+  function load(track) {
+    if (!track) { return; }
+    if (audio.getAttribute('data-id') !== track.id) {
+      audio.src = track.src;
+      audio.setAttribute('data-id', track.id);
+    }
+  }
+
+  function play() {
+    var p = audio.play();
+    if (p && p.catch) {
+      p.catch(function () {
+        // Autoplay refused, or the file would not load. Show it as paused
+        // rather than pretending something is playing.
+        set({ paused: true });
+      });
+    }
+  }
+
   function toggleTrack(id) {
     var playing = state.cur === id && !state.paused;
-    if (playing) { set({ paused: true }); }
-    else if (state.cur === id) { set({ paused: false }); }
-    else { set({ cur: id, paused: false, t: 0 }); }
+    if (playing) {
+      audio.pause();
+      set({ paused: true });
+    } else if (state.cur === id) {
+      load(byId(id));
+      set({ paused: false });
+      play();
+    } else {
+      load(byId(id));
+      audio.currentTime = 0;
+      set({ cur: id, paused: false, t: 0 });
+      play();
+    }
   }
+
   function step(dir) {
     var n = now();
     if (!n) { return; }
     var list = TRACKS.filter(function (t) { return t.film === n.film; });
     var i = list.map(function (t) { return t.id; }).indexOf(n.id);
-    set({ cur: list[(i + dir + list.length) % list.length].id, paused: false, t: 0 });
+    var next = list[(i + dir + list.length) % list.length];
+    load(next);
+    audio.currentTime = 0;
+    set({ cur: next.id, paused: false, t: 0 });
+    play();
   }
-  window.setInterval(function () {
-    if (state.cur !== null && !state.paused) {
-      state.t += 1;
-      all('[data-bind="nowTime"]').forEach(function (el) { el.textContent = clock(state.t); });
-      save();
+
+  function byId(id) {
+    for (var i = 0; i < TRACKS.length; i++) { if (TRACKS[i].id === id) { return TRACKS[i]; } }
+    return null;
+  }
+
+  audio.addEventListener('timeupdate', function () {
+    state.t = Math.floor(audio.currentTime);
+    all('[data-bind="nowTime"]').forEach(function (el) { el.textContent = clock(state.t); });
+    save();
+  });
+
+  audio.addEventListener('play', function () {
+    // A restored position is applied once, when playback actually starts.
+    if (seekTo > 0) {
+      try { audio.currentTime = seekTo; } catch (e) { /* not seekable yet */ }
+      seekTo = 0;
     }
-  }, 1000);
+    if (state.paused) { set({ paused: false }); }
+  });
+
+  audio.addEventListener('pause', function () {
+    if (!state.paused && !audio.ended) { set({ paused: true }); }
+  });
+
+  // Run on to the next song in the same film, the way an album does.
+  audio.addEventListener('ended', function () { step(1); });
+
+  audio.addEventListener('error', function () {
+    set({ paused: true });
+  });
 
   // ---------------------------------------------------------------- menu
   function openMenu() { set({ menu: true }); focusSoon('menu-close'); }
