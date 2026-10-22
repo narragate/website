@@ -63,6 +63,13 @@ a deliberately invalid Resend key, so a valid submission returns
 npx wrangler dev --config wrangler.dev.toml --port 8787
 ```
 
+## Retention
+
+Submissions are written with a two-year `expirationTtl`, so Cloudflare deletes
+them automatically. This is the mechanism behind the retention period stated in
+`privacy.html` — **change `RETENTION_TTL` and the privacy notice together, or
+the notice becomes untrue.** Rate-limit counters expire after two hours.
+
 ## Responses
 
 | Status | Body | Meaning |

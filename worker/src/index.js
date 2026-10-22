@@ -29,6 +29,10 @@ const LIMITS = { fullname: 200, email: 320, org: 200, role: 80, message: 5000 };
 // only caps the damage if it is ever misconfigured or disabled.
 const RATE_LIMIT = 5;
 
+// How long a submission is kept, in seconds. This is the mechanism behind the
+// two-year retention promised in privacy.html — change both together.
+const RETENTION_TTL = 60 * 60 * 24 * 730;
+
 export default {
   async fetch(request, env, ctx) {
     const origin = request.headers.get('Origin') || '';
@@ -81,7 +85,7 @@ export default {
     // Durable record first. If this throws, we have not promised anything.
     const key = `sub:${record.receivedAt}:${crypto.randomUUID()}`;
     try {
-      await env.SUBMISSIONS.put(key, JSON.stringify(record));
+      await env.SUBMISSIONS.put(key, JSON.stringify(record), { expirationTtl: RETENTION_TTL });
     } catch (err) {
       console.error('kv_write_failed', err);
       return json({ ok: false, error: 'storage_failed' }, 500, cors);
