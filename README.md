@@ -27,6 +27,7 @@ The website for Narragate Entertainment LLC, an independent film company in West
 | `assets/fonts/` | EB Garamond and Outfit as variable `.woff2` files, with their licenses |
 | `assets/img/` | The colored Narragate logos and the film-grain texture |
 | `assets/favicon/` | The favicon set from the brand bundle |
+| `worker/` | The Cloudflare Worker behind the two forms. Not part of the published site. |
 
 ## Viewing it locally
 
@@ -48,10 +49,11 @@ There is deliberately no `CNAME` file yet. Adding the custom domain under **Sett
 
 ## Before it goes live
 
-- **The forms do not send anything.** `site.js` checks the fields and shows the confirmation, but nothing is submitted. They need a form service, or a change to open an email, before the site is public.
+- **The forms need the Worker deployed.** `site.js` posts to `api.narragate.com`, a Cloudflare Worker that records each submission in KV and emails the notification. The code is in `worker/`; see `worker/README.md` for the deploy steps. **Until it is deployed the forms show their failure state** — which is correct behaviour, but it does mean they cannot be used yet.
+- **The Turnstile site key is Cloudflare's test key** (`1x00000000000000000000AA`), which always passes. Replace it in `contact.html` and `investors.html` with the real key before launch, or the forms have no spam protection.
 - **The songs are silent.** The player shows its playing state, but no audio files have been supplied.
 - **The teaser and short films open YouTube** in a new tab.
-- **Posters, stills, the portrait, the legal notice and the privacy text are placeholders**, marked in square brackets.
+- **The legal notice and the privacy text are placeholders.** The artwork is now in place; the only bracketed text left in the site is `[Legal notice from counsel]` on the investor page.
 
 ## Previewing states you cannot reach by clicking
 

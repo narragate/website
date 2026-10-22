@@ -1,0 +1,1 @@
+{"form":"investor","receivedAt":"2026-10-22T03:31:24.894Z","ip":"::1","country":null,"userAgent":"curl/8.7.1","data":{"fullname":"Jane Investor","email":"jane@example.com","org":"Acme Films","role":"Producer","message":"Please send the packet."},"consent":true}

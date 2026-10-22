@@ -5,6 +5,10 @@
 
   var TRACKS = [{"id": "d1", "n": "1", "title": "Gritty Life", "note": "Ethan in a bar, early on: whiskey, wit and nowhere to go.", "film": "Duet"}, {"id": "d2", "n": "2", "title": "Words", "note": "Annie at choir rehearsal. Ethan hears her and knows.", "film": "Duet"}, {"id": "d3", "n": "3", "title": "We Had a Good Run", "note": "Annie records alone, for Ethan to carry to Nashville.", "film": "Duet"}, {"id": "d4", "n": "4", "title": "Needing Nothing More", "note": "Their first duet, at a café, just before the accident.", "film": "Duet"}, {"id": "d5", "n": "5", "title": "Beverly", "note": "An old, unreleased love song that surfaces in rehab.", "film": "Duet"}, {"id": "d6", "n": "6", "title": "A Love So Fine", "note": "The second duet: love lasts when both can bend.", "film": "Duet"}, {"id": "d7", "n": "7", "title": "With a Little Hope", "note": "Annie, on her own, after Ethan pulls away.", "film": "Duet"}, {"id": "d8", "n": "8", "title": "Reputations", "note": "Ethan’s pride, and what his name has cost him.", "film": "Duet"}, {"id": "d9", "n": "9", "title": "Lookin’ Back Is My Disease", "note": "Ethan counts what he wasted and who he hurt.", "film": "Duet"}, {"id": "d10", "n": "10", "title": "Voice of Angel", "note": "The final scene. Ethan tells Annie the truth.", "film": "Duet"}, {"id": "a1", "n": "1", "title": "Head in the Clouds", "note": "", "film": "Aileen"}, {"id": "a2", "n": "2", "title": "Where Mermaids Sing", "note": "", "film": "Aileen"}, {"id": "a3", "n": "3", "title": "Marked by Love and Shadow", "note": "", "film": "Aileen"}, {"id": "a4", "n": "4", "title": "Loveless Fool", "note": "", "film": "Aileen"}];
   var EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+  // Where the forms post. The Worker also serves the investor form; the two
+  // are told apart by the `form` field in the body.
+  var ENDPOINT = 'https://api.narragate.com/';
   var params = new URLSearchParams(window.location.search);
 
   var store = {
@@ -19,6 +23,7 @@
     cur: null,
     paused: false,
     t: 0,
+    sending: false,
     sent: params.get('form') === 'sent',
     failed: params.get('form') === 'failure',
     teaserEnded: params.get('teaser') === 'ended',
@@ -55,6 +60,7 @@
       notSent: !state.sent,
       sent: state.sent,
       failed: !state.sent && state.failed,
+      sending: state.sending,
       errName: !!state.errs.name,
       errEmail: !!state.errs.email,
       errConsent: !!state.errs.consent,
@@ -87,6 +93,10 @@
     if (opener) { opener.setAttribute('aria-expanded', state.menu ? 'true' : 'false'); }
     all('[data-invalid]').forEach(function (el) {
       el.setAttribute('aria-invalid', state.errs[el.getAttribute('data-invalid')] ? 'true' : 'false');
+    });
+    all('[data-form] button[type="submit"]').forEach(function (btn) {
+      btn.disabled = state.sending;
+      btn.textContent = state.sending ? 'Sending...' : (btn.getAttribute('data-label') || btn.textContent);
     });
     save();
   }
@@ -152,7 +162,8 @@
   });
 
   // ---------------------------------------------------------------- forms
-  // The forms are not connected to a server. Sending shows the confirmation only.
+  // Submissions post to a Cloudflare Worker, which records them in KV and
+  // emails the notification. The confirmation is shown only on a 2xx.
   function checkSoon(key, bad) {
     window.setTimeout(function () {
       if (state.sent) { return; }
@@ -184,7 +195,10 @@
       focusSoon(next.name ? 'fullname' : (next.email ? 'email' : 'consent'));
       return;
     }
-    set({ sent: true, errs: {} });
+    send(form, f);
+  });
+
+  function focusSent() {
     window.setTimeout(function () {
       var el = document.getElementById('sent');
       if (!el) { return; }
@@ -192,7 +206,64 @@
       var panel = el.closest('.panel');
       if (panel) { panel.scrollIntoView({ block: 'nearest' }); }
     }, 60);
-  });
+  }
+
+  function send(form, f) {
+    var payload = {
+      form: form.getAttribute('data-form') || 'contact',
+      fullname: f.fullname.value.trim(),
+      email: f.email.value.trim(),
+      consent: f.consent ? !!f.consent.checked : true,
+      website: f.website ? f.website.value : '',
+      token: tokenFor(form)
+    };
+    ['org', 'role', 'message'].forEach(function (k) {
+      if (f[k]) { payload[k] = f[k].value.trim(); }
+    });
+
+    set({ sending: true, failed: false, errs: {} });
+
+    window.fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      return res.json().catch(function () { return { ok: res.ok }; });
+    }).then(function (out) {
+      if (out && out.ok) {
+        set({ sending: false, sent: true, failed: false, errs: {} });
+        focusSent();
+      } else {
+        fail(form);
+      }
+    }).catch(function () {
+      fail(form);
+    });
+  }
+
+  function fail(form) {
+    set({ sending: false, sent: false, failed: true });
+    resetChallenge(form);
+    window.setTimeout(function () {
+      var el = form.querySelector('[data-if="failed"] .err');
+      if (el && el.scrollIntoView) { el.scrollIntoView({ block: 'nearest' }); }
+    }, 60);
+  }
+
+  // Turnstile renders into [data-challenge] and writes its token into a
+  // hidden input named cf-turnstile-response. A token is single-use, so a
+  // failed attempt must reset the widget before the visitor retries.
+  function tokenFor(form) {
+    var el = form.querySelector('[name="cf-turnstile-response"]');
+    return el ? el.value : '';
+  }
+
+  function resetChallenge(form) {
+    var box = form.querySelector('[data-challenge]');
+    if (box && window.turnstile && window.turnstile.reset) {
+      try { window.turnstile.reset(box); } catch (e) { /* widget not ready */ }
+    }
+  }
 
   render();
 })();

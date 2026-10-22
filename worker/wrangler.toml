@@ -1,0 +1,25 @@
+name = "narragate-forms"
+main = "src/index.js"
+compatibility_date = "2026-10-22"
+
+# api.narragate.com must be an orange-cloud (proxied) record for this route to
+# fire. The apex stays DNS-only so GitHub Pages can hold its own certificate.
+routes = [
+  { pattern = "api.narragate.com/*", zone_name = "narragate.com" }
+]
+
+# Created with:
+#   npx wrangler kv namespace create SUBMISSIONS
+# then paste the returned id below.
+kv_namespaces = [
+  { binding = "SUBMISSIONS", id = "REPLACE_WITH_KV_NAMESPACE_ID" }
+]
+
+[vars]
+NOTIFY_TO = "howard.donnell@narragate.com"
+MAIL_FROM = "Narragate <forms@send.narragate.com>"
+ALLOWED_ORIGINS = "https://narragate.com,https://www.narragate.com,https://narragate.github.io"
+
+# Secrets are never stored here. Set them with:
+#   npx wrangler secret put RESEND_API_KEY
+#   npx wrangler secret put TURNSTILE_SECRET

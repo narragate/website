@@ -1,0 +1,17 @@
+# Local-only config for `npx wrangler dev`. No routes, so no account auth is
+# needed; KV is simulated on disk by miniflare. Not used for deploys.
+name = "narragate-forms-dev"
+main = "src/index.js"
+compatibility_date = "2026-10-22"
+
+kv_namespaces = [
+  { binding = "SUBMISSIONS", id = "local-dev" }
+]
+
+[vars]
+NOTIFY_TO = "howard.donnell@narragate.com"
+MAIL_FROM = "Narragate <forms@send.narragate.com>"
+ALLOWED_ORIGINS = "https://narragate.com,https://www.narragate.com,https://narragate.github.io,http://localhost:8799"
+# Cloudflare's documented always-passes test secret.
+TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
+RESEND_API_KEY = "re_local_dev_invalid"
