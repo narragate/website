@@ -1,2 +1,66 @@
-# website
-public website for narragate.com
+# Narragate website
+
+The website for Narragate Entertainment LLC, an independent film company in West Lawn, Pennsylvania. Plain HTML, CSS and JavaScript, with no build step and no dependencies.
+
+## Pages
+
+| File | Page |
+| --- | --- |
+| `index.html` | Home |
+| `films.html` | Films |
+| `duet.html` | *Duet* film page |
+| `aileen.html` | *Aileen* film page |
+| `music.html` | Music |
+| `journal.html` | Journal |
+| `about.html` | About |
+| `investors.html` | Investors, with the packet request form |
+| `contact.html` | Contact |
+| `privacy.html` | Privacy |
+| `404.html` | Page not found |
+
+## Folders
+
+| Folder | Contents |
+| --- | --- |
+| `assets/css/` | `narragate.css` (the stylesheet) and `fonts.css` (the three `@font-face` rules) |
+| `assets/js/` | `site.js`: the menu, the song player and the forms |
+| `assets/fonts/` | EB Garamond and Outfit as variable `.woff2` files, with their licenses |
+| `assets/img/` | The colored Narragate logos and the film-grain texture |
+| `assets/favicon/` | The favicon set from the brand bundle |
+
+## Viewing it locally
+
+Fonts load as files, so serve the folder rather than opening it directly:
+
+```sh
+python3 -m http.server 8000
+```
+
+Then open http://localhost:8000.
+
+## Publishing on GitHub Pages
+
+In the repository, open **Settings > Pages**, set **Source** to **Deploy from a branch**, and choose `main` and `/ (root)`. The `.nojekyll` file tells GitHub to serve the files exactly as they are.
+
+There is deliberately no `CNAME` file yet. Adding the custom domain under **Settings > Pages** creates one; do that when the DNS for narragate.com is ready to switch, so the site stays viewable at its github.io address until then.
+
+`404.html` is served automatically for missing addresses. Its links are relative, so it keeps its styling for missing pages at the top level of the site but not for addresses inside folders.
+
+## Before it goes live
+
+- **The forms do not send anything.** `site.js` checks the fields and shows the confirmation, but nothing is submitted. They need a form service, or a change to open an email, before the site is public.
+- **The songs are silent.** The player shows its playing state, but no audio files have been supplied.
+- **The teaser and short films open YouTube** in a new tab.
+- **Posters, stills, the portrait, the legal notice and the privacy text are placeholders**, marked in square brackets.
+
+## Previewing states you cannot reach by clicking
+
+| Address | Shows |
+| --- | --- |
+| `investors.html?form=failure` | The message shown when a request fails to send |
+| `investors.html?form=sent` | The confirmation, with step 1 ticked |
+| `duet.html?teaser=ended` | What the teaser frame offers once the teaser ends |
+
+## Fonts
+
+EB Garamond and Outfit are licensed under the SIL Open Font License 1.1. The license texts are in `assets/fonts/`.
