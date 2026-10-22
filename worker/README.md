@@ -19,13 +19,13 @@ never claims a success it cannot prove.
 
 All of this runs from this directory.
 
-**1. Point `api.narragate.com` at Cloudflare.** In the dashboard add an `A`
-record for `api` → `192.0.2.1` (a placeholder; the Worker route intercepts
-before the origin is reached) and set it to **orange cloud / Proxied**. The
-route will not fire on a DNS-only record. The apex stays DNS-only so GitHub
-Pages keeps its own certificate.
+**1. `api.narragate.com` — already created**: an `A` record to `192.0.2.1`
+(a placeholder; the Worker route intercepts before the origin is reached), set
+to **orange cloud / Proxied**. The route will not fire on a DNS-only record.
+The apex stays DNS-only so GitHub Pages keeps its own certificate.
 
-**2. Create the KV namespace** and paste the id into `wrangler.toml`:
+**2. KV namespace — already created** as `d61297aec2864132b948551b82f9a1b5` and wired
+into `wrangler.toml`. Only needed again if the namespace is ever recreated:
 
 ```sh
 npx wrangler kv namespace create SUBMISSIONS
