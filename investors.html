@@ -95,7 +95,7 @@
 <textarea class="inp" id="message" name="message" rows="2"></textarea>
 </div>
 <div class="stk" style="gap: 8px">
-<label class="chk body" for="consent"><input id="consent" name="consent" type="checkbox" aria-describedby="err-consent"><span>I agree to be contacted about this request.</span></label>
+<label class="chk body" for="consent"><input id="consent" name="consent" type="checkbox" aria-describedby="err-consent"><span>I agree to be contacted about this request. See the <a class="lk lk-b" href="privacy.html">privacy notice</a>.</span></label>
 <div data-if="errConsent" hidden><div class="err" id="err-consent"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.4v.2"></path></svg><span>Tick the box so we can reply.</span></div></div>
 </div>
 <div data-if="failed" hidden><div class="err" role="alert"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.4v.2"></path></svg><span>The request didn’t send. Try again, or email howard.donnell@narragate.com.</span></div></div>
@@ -112,7 +112,15 @@
 </div>
 </div>
 <p class="meta mut">Detailed materials go to qualified investors after the NDA is signed. Prefer email? Write to howard.donnell@narragate.com.</p>
-<p class="meta mut">[Legal notice from counsel]</p>
+<!-- DRAFT LEGAL NOTICE - NOT REVIEWED BY COUNSEL.
+     Written to be conventional and accurate for a pre-offering film page, but
+     securities wording is a lawyer's call. Replace with counsel's text before
+     relying on it. See README, "Before it goes live". -->
+<div class="stk meta mut" style="gap: 8px">
+<p>Nothing on this page is an offer to sell, or a solicitation of an offer to buy, any security. Any offering would be made only to qualified investors, and only through definitive offering documents provided after a non-disclosure agreement is signed.</p>
+<p>Statements here about the slate, the schedule and the prospects of a film are forward-looking, and are not promises. Independent film is speculative. Budgets, casting, financing and release plans change, and an investor may lose the entire amount invested.</p>
+<p>This page is not investment, legal or tax advice. Please take your own before committing to anything.</p>
+</div>
 </div>
 
 <div class="stk" style="gap: 64px">

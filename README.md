@@ -53,7 +53,8 @@ There is deliberately no `CNAME` file yet. Adding the custom domain under **Sett
 - **The Turnstile site key is Cloudflare's test key** (`1x00000000000000000000AA`), which always passes. Replace it in `contact.html` and `investors.html` with the real key before launch, or the forms have no spam protection.
 - **The songs are silent.** The player shows its playing state, but no audio files have been supplied.
 - **The teaser and short films open YouTube** in a new tab.
-- **The legal notice and the privacy text are placeholders.** The artwork is now in place; the only bracketed text left in the site is `[Legal notice from counsel]` on the investor page.
+- **The investor legal notice is a draft that counsel has not reviewed.** It is live on `investors.html` and is marked with an HTML comment in the source. It was written to be conventional and accurate for a pre-offering page, but securities wording is a lawyer's call. Replace it before relying on it.
+- **The privacy notice describes the system as built** — what the two forms collect, the IP, country and user-agent recorded with a submission, Cloudflare and Resend as processors, and a two-year retention period. If the forms or the Worker change, `privacy.html` has to change with them.
 
 ## Previewing states you cannot reach by clicking
 
