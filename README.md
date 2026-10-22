@@ -50,7 +50,7 @@ There is deliberately no `CNAME` file yet. Adding the custom domain under **Sett
 ## Before it goes live
 
 - **The forms need the Worker deployed.** `site.js` posts to `api.narragate.com`, a Cloudflare Worker that records each submission in KV and emails the notification. The code is in `worker/`; see `worker/README.md` for the deploy steps. **Until it is deployed the forms show their failure state** — which is correct behaviour, but it does mean they cannot be used yet.
-- **The Turnstile site key is Cloudflare's test key** (`1x00000000000000000000AA`), which always passes. Replace it in `contact.html` and `investors.html` with the real key before launch, or the forms have no spam protection.
+- **Turnstile is live** with the real widget for `narragate.com`, `www.narragate.com` and `narragate.github.io`. If the site ever moves to another hostname, add it to the widget or the forms will reject every submission.
 - **The songs are silent.** The player shows its playing state, but no audio files have been supplied.
 - **The teaser and short films open YouTube** in a new tab.
 - **The investor legal notice is a draft that counsel has not reviewed.** It is live on `investors.html` and is marked with an HTML comment in the source. It was written to be conventional and accurate for a pre-offering page, but securities wording is a lawyer's call. Replace it before relying on it.

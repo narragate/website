@@ -8,12 +8,13 @@ spam-filtered notification must not lose an enquiry, so if the mail call fails
 the record still exists and the browser is still told the send failed — the form
 never claims a success it cannot prove.
 
-## Before it can go live
+## Turnstile
 
-> **The Turnstile site key in `contact.html` and `investors.html` is Cloudflare's
-> public test key (`1x00000000000000000000AA`), which always passes.** It makes
-> the forms work end to end before a real key exists. **Replace it with the real
-> site key, and set the matching secret, or the forms have no spam protection.**
+The live widget covers `narragate.com`, `www.narragate.com` and
+`narragate.github.io`. Turnstile checks the hostname, so **a site served from
+any other host will have every submission rejected** — add the host to the
+widget first. The site key sits in `data-sitekey` in `contact.html` and
+`investors.html`; the matching secret is a Worker secret.
 
 ## Deploying
 
