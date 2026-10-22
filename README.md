@@ -29,6 +29,7 @@ The website for Narragate Entertainment LLC, an independent film company in West
 | `assets/audio/` | The fourteen songs, named `<film>-<nn>-<slug>.mp3` |
 | `assets/favicon/` | The favicon set from the brand bundle |
 | `worker/` | The Cloudflare Worker behind the two forms. Not part of the published site. |
+| `robots.txt`, `sitemap.xml` | Crawler directives. Both assume the site is served at the domain root. |
 
 ## Viewing it locally
 
